@@ -1,0 +1,13 @@
+name: mc15
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pyrosm
+  - geopandas
+  - matplotlib
+  - scipy
+  - pandas
+  - shapely
+  - pyproj
+  - tqdm
