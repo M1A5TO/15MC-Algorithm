@@ -1,1 +1,0 @@
-osmium extract -b 18.56953160607673,54.30708423579402,18.72366839392327,54.39691576420597 -s complete_ways   -o gdynia_5km.pbf poland-251015.osm.pbf -v

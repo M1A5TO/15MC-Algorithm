@@ -1,0 +1,23 @@
+osmium tags-filter data/poland-251010.osm.pbf ^
+  nwr/shop=supermarket ^
+  nwr/shop=convenience ^
+  nwr/shop=bakery ^
+  nwr/amenity=pharmacy ^
+  nwr/amenity=hospital nwr/amenity=clinic ^
+  nwr/amenity=parcel_locker ^
+  nwr/highway=bus_stop ^
+  nwr/railway=tram_stop ^
+  nwr/amenity=university nwr/amenity=college ^
+  nwr/amenity=library ^
+  nwr/amenity=nightclub ^
+  nwr/leisure=fitness_centre ^
+  nwr/amenity=school ^
+  nwr/amenity=kindergarten nwr/amenity=childcare ^
+  nwr/leisure=playground ^
+  nwr/leisure=park ^
+  nwr/amenity=veterinary ^
+  nwr/shop=pet ^
+  nwr/amenity=pub ^
+  nwr/railway=station nwr/railway=halt ^
+  nwr/public_transport=station nwr/public_transport=halt ^
+  -o data/poi_pre.pbf -O
