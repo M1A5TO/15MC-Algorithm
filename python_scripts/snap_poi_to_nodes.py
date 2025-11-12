@@ -122,14 +122,29 @@ def extract_pois(osm: OSM) -> gpd.GeoDataFrame:
         for (key, val) in pairs:
             custom.setdefault(key, []).append(val)
 
-        gdf = osm.get_data_by_custom_criteria(
-            custom_filter=custom,
-            filter_type="keep",
-            keep_nodes=True,
-            keep_ways=True,
-            keep_relations=True,
-        )
+        try:
+            gdf = osm.get_data_by_custom_criteria(
+                custom_filter=custom,
+                filter_type="keep",
+                keep_nodes=True,
+                keep_ways=True,
+                keep_relations=True,  
+            )
+        except KeyError as e:
+            if "tags" in str(e):
+                #print("[snap] WARNING: relations without 'tags' in this PBF -> retry without relations")
+                gdf = osm.get_data_by_custom_criteria(
+                    custom_filter=custom,
+                    filter_type="keep",
+                    keep_nodes=True,
+                    keep_ways=True,
+                    keep_relations=False, 
+                )
+            else:
+                raise
+
         if gdf is None or gdf.empty:
+            #print("[snap] INFO: Brak POI po filtrze (nodes/ways/relations).")
             continue
 
         gdf = to_points(gdf)
