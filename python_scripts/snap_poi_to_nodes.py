@@ -132,7 +132,6 @@ def extract_pois(osm: OSM) -> gpd.GeoDataFrame:
             )
         except KeyError as e:
             if "tags" in str(e):
-                #print("[snap] WARNING: relations without 'tags' in this PBF -> retry without relations")
                 gdf = osm.get_data_by_custom_criteria(
                     custom_filter=custom,
                     filter_type="keep",
@@ -144,7 +143,6 @@ def extract_pois(osm: OSM) -> gpd.GeoDataFrame:
                 raise
 
         if gdf is None or gdf.empty:
-            #print("[snap] INFO: Brak POI po filtrze (nodes/ways/relations).")
             continue
 
         gdf = to_points(gdf)
@@ -192,7 +190,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pbf", required=True, help="Filtered .pbf tile (contains POIs and network).")
     ap.add_argument("--csr", required=True, help="CSR .npz file for the SAME tile.")
-    ap.add_argument("--out", default=None, help="Output Parquet path. Defaults to data/{basename}_poi.parquet")
+    ap.add_argument("--out", required=True, help="Output Parquet path. Defaults to data/{basename}_poi.parquet")
     args = ap.parse_args()
 
     T0 = time.perf_counter()
@@ -209,7 +207,7 @@ def main():
     pois = extract_pois(osm)
     if pois.empty:
         print("[2] No POIs in this tile per the filter.")
-        out_path = args.out or os.path.join("data", f"{os.path.splitext(os.path.basename(args.pbf))[0]}_poi.parquet")
+        out_path = args.out
         pd.DataFrame(columns=["poi_id","category","node_idx","lon","lat","name","dist_to_node_m"]).to_parquet(out_path, index=False)
         print(f"[OK] Saved empty {out_path}.  ({tsec(t)})")
         return
@@ -232,16 +230,11 @@ def main():
         "dist_to_node_m": snapped["dist_to_node_m"].astype("float32"),
     })
 
-    cwd = os.getcwd()
-    if getattr(args, "out", None):
-        filename = os.path.basename(args.out)
-        if os.path.splitext(filename)[1] == "":
-            filename = filename + ".parquet"
-    else:
-        base = os.path.splitext(os.path.basename(args.pbf))[0]
-        filename = f"{base}_poi.parquet"
-    
-    out_path = os.path.join(cwd, filename)
+    out_path = os.path.abspath(os.path.expanduser(args.out))
+    parent = os.path.dirname(out_path)
+    if parent and not os.path.exists(parent):
+        os.makedirs(parent, exist_ok=True)
+
     out_df.to_parquet(out_path, index=False)
     print(f"[4] Saved: {out_path}  rows={len(out_df)}")
 
