@@ -137,7 +137,6 @@ celerybeat.pid
 # Environments
 .conda
 .mamba
-.env
 .envrc
 .venv
 env/
